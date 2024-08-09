@@ -44,7 +44,7 @@ async def keras(apikey: str = Query(...), image_url: str = Query(...)):
             _, predicted_class = torch.max(prediction, 1)
     
     # Return the prediction
-        return '{}'.format(predicted_class.item()) , 200
+         return {"prediction": predicted_class.item()}, {'status':200}
     else:
         return "Not valid apikey", 400 
 
