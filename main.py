@@ -6,7 +6,6 @@ from PIL import Image
 import requests
 from io import BytesIO
 import torch.nn as nn
-from pyngrok import ngrok
 app = Flask(__name__)
 
 class ResNet50(nn.Module):
@@ -61,7 +60,4 @@ def read_tensor_from_image_url(url,
     return tensor
 
 if __name__ == "__main__":
-    ngrok.set_auth_token("2QKsbEXhnGc0P8WnoUgvlyZV74c_7PXhA6Z6wdaSYBHMicDYw")
-    public_url = ngrok.connect(5000).public_url
-    print(public_url)
-    app.run(port=4000 )  # Set host to 0.0.0.0 to listen on all interfaces
+    app.run(port=4000)  # Set host to 0.0.0.0 to listen on all interfaces
