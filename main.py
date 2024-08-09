@@ -44,7 +44,7 @@ async def keras(apikey: str = Query(...), image_url: str = Query(...)):
         _, predicted_class = torch.max(prediction, 1)
     
     # Return the prediction
-    return {'predicted_class': predicted_class.item()}
+    return '{}'.format(predicted_class.item()) , 200
 
 def read_tensor_from_image_url(url,
                                input_height=224,
