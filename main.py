@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from flask import Flask, request, jsonify
 import torch
 import torchvision
 from torchvision import transforms
@@ -7,7 +7,7 @@ import requests
 from io import BytesIO
 import torch.nn as nn
 
-app = FastAPI()
+app = Flask(__name__)
 
 class ResNet50(nn.Module):
     def __init__(self):
@@ -27,26 +27,27 @@ model.load_state_dict(torch.load('resnet50.pth', map_location=device))
 model.to(device)
 model.eval()  # Set model to evaluation mode
 
-@app.get('/')
+@app.route('/')
 def test():
-    return 'test'
+    return "Test successful"
 
-
-@app.post("/prediction")
-async def keras(apikey: str = Query(...), image_url: str = Query(...)):
+@app.route('/prediction', methods=['POST'])
+def keras():
+    apikey = request.args.get('apikey')
+    image_url = request.args.get('image_url')
+    
     if apikey == 'f69c02cc-5423-4285-9993-b42ecdec1c74':  
-        
-
         image_tensor = read_tensor_from_image_url(image_url)
     
         with torch.no_grad():  # Disable gradient calculation for inference
             prediction = model(image_tensor.to(device))  # Move tensor to device
             _, predicted_class = torch.max(prediction, 1)
     
-    # Return the prediction
-         return {"prediction": predicted_class.item()}, {'status':200}
+        # Return the prediction in JSON format
+        return jsonify({"status": "success", "prediction": predicted_class.item()}), 200
+    
     else:
-        return "Not valid apikey", 400 
+        return jsonify({"status": "error", "message": "Not valid apikey"}), 400 
 
 def read_tensor_from_image_url(url,
                                input_height=224,
@@ -65,5 +66,4 @@ def read_tensor_from_image_url(url,
     return tensor
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000)
