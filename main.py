@@ -34,17 +34,19 @@ def test():
 
 @app.post("/prediction")
 async def keras(apikey: str = Query(...), image_url: str = Query(...)):
-    if apikey != 'f69c02cc-5423-4285-9993-b42ecdec1c74':
-        raise HTTPException(status_code=400, detail="Invalid API key")
+    if apikey == 'f69c02cc-5423-4285-9993-b42ecdec1c74':  
+        
 
-    image_tensor = read_tensor_from_image_url(image_url)
+        image_tensor = read_tensor_from_image_url(image_url)
     
-    with torch.no_grad():  # Disable gradient calculation for inference
-        prediction = model(image_tensor.to(device))  # Move tensor to device
-        _, predicted_class = torch.max(prediction, 1)
+        with torch.no_grad():  # Disable gradient calculation for inference
+            prediction = model(image_tensor.to(device))  # Move tensor to device
+            _, predicted_class = torch.max(prediction, 1)
     
     # Return the prediction
-    return '{}'.format(predicted_class.item()) , 200
+        return '{}'.format(predicted_class.item()) , 200
+    else:
+        return "Not valid apikey", 400 
 
 def read_tensor_from_image_url(url,
                                input_height=224,
